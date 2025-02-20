@@ -86,13 +86,20 @@ export default function App() {
           </nav>
         </aside>
 
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-8 relative">
           {isProjectCreated ? (
             <>
               <Routes>
                 <Route
                   path="/"
-                  element={<ProjectOverview projectName={projectName} />}
+                  element={
+                    <>
+                      <ProjectOverview projectName={projectName} />
+                      <div className="fixed bottom-0 left-64 right-0">
+                        <Banner />
+                      </div>
+                    </>
+                  }
                 />
                 <Route path="/tasks" element={<TasksPage />} />
                 <Route path="/tasks/new" element={<NewTaskPage />} />
@@ -101,7 +108,6 @@ export default function App() {
                 <Route path="/users/:id/edit" element={<EditUserPage />} />
                 <Route path="/task-assignment" element={<TaskAssignment />} />
               </Routes>
-              <Banner />
             </>
           ) : (
             <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-sm p-8">
