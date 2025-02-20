@@ -4,72 +4,66 @@ const bannerConfig = {
   logo: "TaskFlow.ai",
   title: "AI-Powered Task Management System",
   author: "Debopriyo Roy",
-  description: "An intelligent task management and allocation system that uses AI to recommend the best employee for each task based on skills, performance, and workload.",
+  description:
+    "An intelligent task management and allocation system that uses AI to recommend the best employee for each task based on skills, performance, and workload.",
   author_github: "https://github.com/deca109",
   repo_url: "ErikSimson/Taskflow.ai",
   github: "https://github.com/deca109/Taskflow.ai",
-  license: "MIT"
+  license: "MIT",
 };
 
 const Banner = () => {
-  const {
-    logo,
-    title,
-    author,
-    description,
-    author_github,
-    github,
-    license,
-  } = bannerConfig;
+  const { logo, title, author, description, author_github, github, license } =
+    bannerConfig;
 
   return (
-    <div className="banner-container">
-      <div className="banner-grid">
+    <div className=" bottom-0 w-full bg-white rounded-lg text-gray-800 p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl border-radius-3xl mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
         {/* Logo and Description Section */}
-        <div className="banner-logo-section">
-          <div className="banner-logo">
-            <div className="logo-text">
-              <a
-                href={github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="logo-link"
-              >
-                {logo}
-              </a>
-            </div>
-          </div>
-          <div className="banner-title">{title}</div>
-          <div className="banner-description">{description}</div>
-          <div className="banner-license">License: {license}</div>
+        <div>
+          <h1 className="text-3xl text-indigo-600 font-bold mb-2">
+            <a
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-600 hover:underline"
+            >
+              {logo}
+            </a>
+          </h1>
+          <h2 className="text-xl font-semibold">{title}</h2>
+          <p className="text-sm text-gray-600 mt-2">{description}</p>
+          <p className="mt-2 font-medium">License: {license}</p>
         </div>
-
-        <div className="banner-divider" />
 
         {/* Author Section */}
-        <div className="banner-author-section">
-          <span className="section-heading">Project Author</span>
-          <div className="author-link">
-            <a href={author_github} className="hover-link">
-              {author}
-            </a>
-          </div>
+        <div>
+          <h3 className="text-lg font-semibold">Project Author</h3>
+          <a href={author_github} className="text-indigo-600 hover:underline">
+            {author}
+          </a>
         </div>
 
-        <div className="banner-divider" />
-
         {/* Links Section */}
-        <div className="banner-links-section">
-          <span className="section-heading">Links</span>
-          <a href={github} className="hover-link">
-            Source code
-          </a>
-          <a href={`${github}#readme`} className="hover-link">
-            Documentation
-          </a>
-          <a href={`${github}/issues/new`} className="hover-link">
-            Report an Issue
-          </a>
+        <div>
+          <h3 className="text-lg font-semibold">Links</h3>
+          <div className="flex flex-col space-y-2 mt-2">
+            <a href={github} className="text-indigo-600 hover:underline">
+              Source Code
+            </a>
+            <a
+              href={`${github}#readme`}
+              className="text-indigo-600 hover:underline"
+            >
+              Documentation
+            </a>
+            <a
+              href={`${github}/issues/new`}
+              className="text-indigo-600 hover:underline"
+            >
+              Report an Issue
+            </a>
+          </div>
         </div>
       </div>
     </div>

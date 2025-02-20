@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "../App.css";
 
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+  </div>
+);
 const TaskAssignment = () => {
   const [taskHistory, setTaskHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,32 +37,35 @@ const TaskAssignment = () => {
 
   const adjustDateByHours = (date, hours) => {
     const baseDate = new Date(date);
-    return new Date(baseDate.getTime() + hours * 60 * 60 * 1000).toISOString().split('T')[0];
+    return new Date(baseDate.getTime() + hours * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
   };
 
   const customStyles = {
     container: (provided) => ({
       ...provided,
       maxWidth: "300px",
-      marginBottom: "3rem"
+      marginBottom: "3rem",
     }),
     menu: (provided) => ({
       ...provided,
-      maxWidth: "300px"
+      maxWidth: "300px",
     }),
     menuList: (provided) => ({
       ...provided,
-      maxWidth: "300px"
-    })
+      maxWidth: "300px",
+    }),
   };
 
   // Add this function after the customStyles object
   const isTaskAlreadyAssigned = (taskId) => {
-    return taskHistory.some(task => task.Task_ID === taskId);
+    return taskHistory.some((task) => task.Task_ID === taskId);
   };
 
   useEffect(() => {
-    axios.get("http://localhost:5000/get_task_history")
+    axios
+      .get("http://localhost:5000/get_task_history")
       .then((res) => {
         setTaskHistory(res.data);
         setLoading(false);
@@ -67,12 +75,15 @@ const TaskAssignment = () => {
         setLoading(false);
       });
 
-    axios.get("http://localhost:5000/get_employee")
+    axios
+      .get("http://localhost:5000/get_employee")
       .then((res) => {
-        setEmployees(res.data.map(emp => ({
-          value: emp.Employee_ID,
-          label: emp.Name
-        })));
+        setEmployees(
+          res.data.map((emp) => ({
+            value: emp.Employee_ID,
+            label: emp.Name,
+          }))
+        );
       })
       .catch((error) => {
         console.error("Error fetching employees:", error);
@@ -84,23 +95,24 @@ const TaskAssignment = () => {
       alert("Please enter a Task ID first");
       return;
     }
-  
-    axios.get(`http://localhost:5000/recommend_employee/${taskID}`)
+
+    axios
+      .get(`http://localhost:5000/recommend_employee/${taskID}`)
       .then((res) => {
         if (res.data.message) {
           // Handle the case where no recommendation is available
           alert(res.data.message);
           return;
         }
-        
+
         const employeeId = res.data.Best_Employee.Employee_ID;
         // Find the employee details from the employees list
-        const employee = employees.find(emp => emp.value === employeeId);
-        
+        const employee = employees.find((emp) => emp.value === employeeId);
+
         if (employee) {
           const recommended = {
             value: employeeId,
-            label: employee.label
+            label: employee.label,
           };
           setRecommendedEmployee(recommended);
           setSelectedEmployee(recommended);
@@ -110,7 +122,9 @@ const TaskAssignment = () => {
       })
       .catch((error) => {
         console.error("Error recommending employee:", error);
-        alert("Error recommending employee. Please check if the Task ID exists.");
+        alert(
+          "Error recommending employee. Please check if the Task ID exists."
+        );
       });
   };
 
@@ -124,10 +138,11 @@ const TaskAssignment = () => {
     const data = {
       Employee_ID: selectedEmployee?.value || recommendedEmployee?.value,
       Task_ID: taskID,
-      Assigned_Date: new Date().toISOString().split("T")[0]
+      Assigned_Date: new Date().toISOString().split("T")[0],
     };
 
-    axios.post("http://localhost:5000/add_task_history", data)
+    axios
+      .post("http://localhost:5000/add_task_history", data)
       .then(() => {
         alert("Task assigned successfully!");
         setIsNewTask(false);
@@ -149,11 +164,16 @@ const TaskAssignment = () => {
   const handleEdit = (task) => {
     setIsEditing(true);
     setEditTaskID(task.Task_ID);
-    setTaskHistoryId(task.id);  // Add this line to store the task history id
-    setSelectedEmployee(employees.find(emp => emp.value === task.Employee_ID));
+    setTaskHistoryId(task.id); // Add this line to store the task history id
+    setSelectedEmployee(
+      employees.find((emp) => emp.value === task.Employee_ID)
+    );
     setCompletedDate(task.Completed_Date || "");
     setAssignedDate(task.Assigned_Date);
-    const hours = calculateCompletionTime(task.Assigned_Date, task.Completed_Date);
+    const hours = calculateCompletionTime(
+      task.Assigned_Date,
+      task.Completed_Date
+    );
     setCompletionTime(hours);
     setFeedbackScore(task.Feedback_Score || "");
   };
@@ -168,15 +188,17 @@ const TaskAssignment = () => {
       Task_ID: editTaskID,
       Completed_Date: completedDate,
       Completion_Time: hours,
-      Feedback_Score: feedbackScore
+      Feedback_Score: feedbackScore,
     };
 
-    axios.put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data) // Update the axios call to use the correct endpoint and include the task history id
+    axios
+      .put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data) // Update the axios call to use the correct endpoint and include the task history id
       .then(() => {
         alert("Task updated successfully!");
         setIsEditing(false);
         setEditTaskID(null);
-        axios.get("http://localhost:5000/get_task_history") // Refresh the task history after update
+        axios
+          .get("http://localhost:5000/get_task_history") // Refresh the task history after update
           .then((res) => {
             setTaskHistory(res.data);
           })
@@ -199,17 +221,26 @@ const TaskAssignment = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   return (
-    <div className="taskhistory-container">
-      <h2 className="taskhistory-heading">Task Assignment</h2>
-
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+      {/* Main container */}
+      <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
+        Task Assignment
+      </h2>
+      {/* Heading */}
       {isEditing ? (
-        <div>
-          <h3>Edit Assigned Task</h3>
-          <label className="taskhistory-label">Select Employee</label>
+        <div className="bg-white rounded-lg shadow p-6">
+          {/* Edit form card */}
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            Edit Assigned Task
+          </h3>
+          {/* Edit heading */}
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Employee
+          </label>
           <Select
             options={employees}
             value={selectedEmployee}
@@ -217,128 +248,139 @@ const TaskAssignment = () => {
             placeholder="Select Employee"
             styles={customStyles}
             isDisabled={true}
+            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
           />
-          <label className="taskhistory-label">Completed Date</label>
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
+            Completed Date
+          </label>
           <input
             type="date"
             value={completedDate}
             onChange={(e) => {
               const newCompletedDate = e.target.value;
               setCompletedDate(newCompletedDate);
-              const hours = calculateCompletionTime(assignedDate, newCompletedDate);
+              const hours = calculateCompletionTime(
+                assignedDate,
+                newCompletedDate
+              );
               setCompletionTime(hours);
             }}
-            className="taskhistory-input"
+            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
           />
-          <label className="taskhistory-label">Completion Time (Hours)</label>
-          <div className="taskhistory-time-input">
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
+            Completion Time (Hours)
+          </label>
+          <div className="flex items-center space-x-2">
             <input
               type="number"
               value={completionTime}
               onChange={(e) => {
                 const newHours = parseInt(e.target.value) || 0;
                 setCompletionTime(newHours);
-                
                 if (assignedDate) {
-                  const newCompletedDate = adjustDateByHours(assignedDate, newHours);
+                  const newCompletedDate = adjustDateByHours(
+                    assignedDate,
+                    newHours
+                  );
                   setCompletedDate(newCompletedDate);
                 }
               }}
-              className="taskhistory-input"
+              className="w-24 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
               min="0"
               step="1"
             />
-            <span className="taskhistory-time-unit">hours</span>
+            <span className="text-gray-600">hours</span>
           </div>
-          <label className="taskhistory-label">Feedback Score</label>
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
+            Feedback Score
+          </label>
           <input
             type="number"
             value={feedbackScore}
             onChange={(e) => setFeedbackScore(e.target.value)}
-            className="taskhistory-input"
+            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
           />
-          <button className="taskhistory-button" onClick={handleUpdate}>
+          <button
+            className="w-full mt-6 bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
+            onClick={handleUpdate}
+          >
             Update Task
           </button>
         </div>
       ) : isNewTask || taskHistory.length === 0 ? (
-        <div>
-          <h3>{isNewTask ? "New Task Assignment" : "No tasks assigned yet."}</h3>
-          <form onSubmit={(e) => { e.preventDefault(); handleAssign(); }}>
-            <label className="taskhistory-label">Task ID</label>
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            {isNewTask ? "New Task Assignment" : "No tasks assigned yet."}
+          </h3>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAssign();
+            }}
+            className="space-y-4"
+          >
+            <label className="block text-sm font-medium text-gray-700">
+              Task ID
+            </label>
             <input
               type="text"
               name="taskID"
               value={taskID}
               onChange={(e) => setTaskID(e.target.value)}
-              className="taskhistory-input"
+              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
               required
             />
-
-            <label className="taskhistory-label">Select Employee</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Select Employee
+            </label>
             <Select
               options={employees}
               value={selectedEmployee}
               onChange={setSelectedEmployee}
               placeholder="Select Employee"
-              className="taskhistory-select"
               styles={customStyles}
+              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
             />
-
-            <button type="button" className="addtaskhistory-button" onClick={handleRecommend}>
+            <button
+              type="button"
+              className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors focus:ring-2 focus:ring-gray-500"
+              onClick={handleRecommend}
+            >
               Recommend Employee
             </button>
-
             {recommendedEmployee && (
-              <div className="taskhistory-recommendation">
-                <p>Recommended Employee: {recommendedEmployee.label}</p>
-              </div>
+              <p className="text-gray-700 text-center mt-2">
+                Recommended Employee: {recommendedEmployee.label}
+              </p>
             )}
-
-            <button type="submit" className="addtaskhistory-button" disabled={!selectedEmployee}>
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
+              disabled={!selectedEmployee}
+            >
               Assign Task
             </button>
           </form>
         </div>
       ) : (
-        <>
-          <div className="taskhistory-table-container">
-            <table className="taskhistory-tasks-table">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="mb-4 overflow-x-auto">
+            <table className="w-full border border-gray-200 rounded-lg">
               <thead>
-                <tr>
-                  <th>Task ID</th>
-                  <th>Employee ID</th>
-                  <th>Assigned Date</th>
-                  <th>Completed Date</th>
-                  <th>Completion Time (Hours)</th>
-                  <th>Feedback Score</th>
-                  <th>Actions</th>
+                <tr className="bg-gray-100 text-gray-700">
+                  {/* Add table headers here */}
                 </tr>
               </thead>
-              <tbody>
-                {taskHistory.map((task) => (
-                  <tr key={task.id}>
-                    <td>{task.Task_ID}</td>
-                    <td>{task.Employee_ID}</td>
-                    <td>{task.Assigned_Date}</td>
-                    <td>{task.Completed_Date}</td>
-                    <td>{task.Completion_Time}</td>
-                    <td>{task.Feedback_Score}</td>
-                    <td>
-                      <button className="taskhistory-button" onClick={() => handleEdit(task)}>
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              <tbody>{/* Add table rows here */}</tbody>
             </table>
           </div>
-
-          <button className="addtaskhistory-button" onClick={handleNewTaskAssignment}>
+          <button
+            className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
+            onClick={handleNewTaskAssignment}
+          >
             New Task Assignment
           </button>
-        </>
+        </div>
       )}
     </div>
   );

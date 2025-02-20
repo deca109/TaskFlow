@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
+
+const FormField = ({ label, children }) => (
+  <div className="mb-4">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
+    {children}
+  </div>
+);
 
 const NewTaskPage = () => {
   const [task, setTask] = useState({
@@ -27,7 +35,10 @@ const NewTaskPage = () => {
   };
 
   const handleSkillsChange = (selectedOptions) => {
-    setTask({ ...task, Required_Skills: selectedOptions.map((opt) => opt.value) });
+    setTask({
+      ...task,
+      Required_Skills: selectedOptions.map((opt) => opt.value),
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -35,7 +46,7 @@ const NewTaskPage = () => {
     try {
       const taskData = {
         ...task,
-        Required_Skills: task.Required_Skills.join(",") // Convert list to comma-separated string
+        Required_Skills: task.Required_Skills.join(","),
       };
       await axios.post("http://localhost:5000/add_task", taskData);
       alert("Task added successfully!");
@@ -46,72 +57,122 @@ const NewTaskPage = () => {
     }
   };
 
+  const inputStyles =
+    "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500";
+
   return (
-    <div className="container">
-      <h2 className="heading">Create New Task</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="Task_ID"
-          placeholder="Task ID"
-          value={task.Task_ID}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-        <textarea
-          name="Description"
-          placeholder="Description"
-          value={task.Description}
-          onChange={handleChange}
-          className="textarea"
-          required
-        />
-        <Select
-          options={skills}
-          isMulti
-          placeholder="Select Required Skills"
-          onChange={handleSkillsChange}
-          className="select"
-        />
-        <input
-          type="number"
-          name="Priority"
-          placeholder="Priority (1-5)"
-          min="1"
-          max="5"
-          value={task.Priority}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-        <input
-          type="number"
-          name="Estimated_Time"
-          placeholder="Estimated Time (in hours)"
-          value={task.Estimated_Time}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-        <input
-          type="number"
-          name="Task_Complexity"
-          placeholder="Task Complexity (1-10)"
-          min="1"
-          max="10"
-          value={task.Task_Complexity}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-        <button
-          type="submit"
-          className="button"
-        >
-          Create Task
-        </button>
-      </form>
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Create New Task</h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Fill in the details below to create a new task.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormField label="TASK ID">
+            <input
+              type="text"
+              name="Task_ID"
+              placeholder="Enter task ID"
+              value={task.Task_ID}
+              onChange={handleChange}
+              className={inputStyles}
+              required
+            />
+          </FormField>
+
+          <FormField label="DESCRIPTION">
+            <textarea
+              name="Description"
+              placeholder="Enter task description"
+              value={task.Description}
+              onChange={handleChange}
+              className={`${inputStyles} h-32 resize-none`}
+              required
+            />
+          </FormField>
+
+          <FormField label="REQUIRED SKILLS">
+            <Select
+              options={skills}
+              isMulti
+              placeholder="Select required skills"
+              onChange={handleSkillsChange}
+              className="react-select"
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  borderColor: "#D1D5DB",
+                  "&:hover": {
+                    borderColor: "#9CA3AF",
+                  },
+                }),
+              }}
+            />
+          </FormField>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField label="PRIORITY">
+              <input
+                type="number"
+                name="Priority"
+                placeholder="1-5"
+                min="1"
+                max="5"
+                value={task.Priority}
+                onChange={handleChange}
+                className={inputStyles}
+                required
+              />
+            </FormField>
+
+            <FormField label="ESTIMATED TIME (HOURS)">
+              <input
+                type="number"
+                name="Estimated_Time"
+                placeholder="Hours"
+                value={task.Estimated_Time}
+                onChange={handleChange}
+                className={inputStyles}
+                required
+              />
+            </FormField>
+
+            <FormField label="TASK COMPLEXITY">
+              <input
+                type="number"
+                name="Task_Complexity"
+                placeholder="1-10"
+                min="1"
+                max="10"
+                value={task.Task_Complexity}
+                onChange={handleChange}
+                className={inputStyles}
+                required
+              />
+            </FormField>
+          </div>
+
+          <div className="flex justify-end pt-4">
+            <button
+              type="button"
+              onClick={() => navigate("/tasks")}
+              className="px-4 py-2 mr-4 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Create Task
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

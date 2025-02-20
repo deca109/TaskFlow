@@ -1,0 +1,550 @@
+/* General Styles */
+
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: white;
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #1e1e1e;
+  padding: 20px;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.version {
+  font-size: 12px;
+  color: #ff00ff;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+nav ul li {
+  padding: 10px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+nav ul .active {
+  background-color: #333;
+  color: white;
+  border-radius: 4px;
+}
+
+/* Main Content */
+.app-main-content {
+  flex-grow: 1;
+  padding: 40px;
+  padding-bottom: 200px;
+}
+
+h2 {
+  font-size: 24px;
+}
+
+.app-label {
+  display: block;
+  font-size: 12px;
+  margin: 10px 0;
+  color: #bbb;
+}
+
+.app-input {
+  width: 300px;
+  padding: 8px;
+  background-color: #222;
+  border: 1px solid #444;
+  color: white;
+  border-radius: 4px;
+}
+
+.app-button {
+  display: block;
+  margin-top: 15px;
+  padding: 10px 15px;
+  background-color: #444;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.app-button:hover {
+  background-color: #555;
+}
+
+.import-text {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #bbb;
+}
+
+.instructions {
+  margin-top: 30px;
+}
+
+.instructions h3 {
+  font-size: 18px;
+}
+
+.instructions p {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+/* ProjectOverview Component */
+.overview-container {
+  padding: 20px;
+  width: 80rem;
+  padding: 2.25rem;
+}
+
+.stats {
+  display: flex;
+  gap: 6rem;
+  margin-top: 20px;
+}
+
+.stat-box {
+  background-color: #333;
+  width: 200px;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 20px;
+  color: #bbb;
+}
+
+.stat-value {
+  font-size: 24px;
+  color: #fff;
+}
+
+.delete-button {
+  background-color: #ff0000;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 50px;
+}
+
+.delete-button:hover {
+  background-color: #cc0000;
+}
+
+/* TasksPage and NewTaskPage Components */
+.container {
+  width: 80rem;
+  margin: 2.5rem auto;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #1e1e1e;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #fff;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #bbb;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #222;
+  color: white;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  outline: none;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.button {
+  width: 200px;
+  /* Set a maximum width for the button */
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+}
+
+.button:hover {
+  background-color: #2563eb;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.tasks-table th,
+.tasks-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.tasks-table th {
+  background-color: #333;
+  color: white;
+}
+
+.select {
+  margin-bottom: 1rem;
+  color: black;
+}
+
+/* UsersPage, NewUserPage, and EditUserPage Components */
+.users-container {
+  width: 80rem;
+  margin: 2.5rem auto;
+  padding: 1.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.users-form {
+  width: 50rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.users-heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #fff;
+}
+
+.users-label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #bbb;
+}
+
+.users-input,
+.users-textarea {
+  width: 80%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #222;
+  color: white;
+}
+
+.users-input:focus,
+.users-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  outline: none;
+}
+
+.users-textarea {
+  resize: vertical;
+}
+
+.users-button {
+  width: fit-content;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  text-align: center;
+}
+
+.users-button:hover {
+  background-color: #2563eb;
+}
+
+.users-button:active {
+  transform: scale(0.98);
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.users-table th,
+.users-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  margin: 0.25rem;
+  text-align: center;
+}
+
+.users-table th {
+  background-color: #333;
+  color: white;
+}
+
+/* TaskHistory Component */
+.taskhistory-container {
+  width: 80rem;
+  margin: 2.5rem auto;
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #1e1e1e;
+  overflow-y: auto;
+  max-height: 80vh;
+  border: 1px solid white;
+}
+
+.taskhistory-table-container {
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.taskhistory-tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.taskhistory-tasks-table th,
+.taskhistory-tasks-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.taskhistory-tasks-table th {
+  background-color: #333;
+  color: white;
+}
+
+.taskhistory-label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+  color: #bbb;
+}
+
+.taskhistory-input {
+  width: 10rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #222;
+  color: white;
+}
+
+.taskhistory-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  outline: none;
+}
+
+.addtaskhistory-button {
+  width: fit-content;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  margin-top: 30px;
+}
+
+.taskhistory-button {
+  width: 100px;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+}
+
+.taskhistory-newtaskbutton {
+  width: 200px;
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  margin-bottom: 20px;
+  margin-top: 30px;
+}
+
+.taskhistory-button:hover {
+  background-color: #2563eb;
+}
+
+.taskhistory-button:active {
+  transform: scale(0.98);
+}
+
+.taskhistory-time-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.taskhistory-time-unit {
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+.taskhistory-time-input input[type="number"] {
+  width: 80px;
+}
+
+.taskhistory-time-input input[type="number"]::-webkit-inner-spin-button,
+.taskhistory-time-input input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* Banner Styles */
+.banner-container {
+  background-color: #1e1e1e;
+  color: white;
+  padding: 2rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  border-top: 1px solid #333;
+}
+
+.banner-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.banner-logo-section {
+  flex: 2;
+  padding: 0;
+}
+
+.banner-author-section,
+.banner-links-section {
+  flex: 1;
+  padding: 0;
+}
+
+.banner-divider {
+  display: none;
+}
+
+.banner-logo-section > *,
+.banner-author-section > *,
+.banner-links-section > * {
+  margin-bottom: 0.75rem;
+}
+
+.banner-logo-section > *:last-child,
+.banner-author-section > *:last-child,
+.banner-links-section > *:last-child {
+  margin-bottom: 0;
+}
+
+.banner-wrapper {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+}
+
+@import "tailwindcss";

@@ -18,7 +18,8 @@ const EditUserPage = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/get_employee/${id}`)
+    axios
+      .get(`http://localhost:5000/get_employee/${id}`)
       .then((res) => {
         setUser(res.data);
       })
@@ -44,16 +45,21 @@ const EditUserPage = () => {
   };
 
   return (
-    <div className="users-container">
-      <h2 className="users-heading">Edit User</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-md">
+      {" "}
+      {/* Main container styling */}
+      <h2 className="text-3xl font-bold text-gray-900 mb-4">Edit User</h2>{" "}
+      {/* Heading styling */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {" "}
+        {/* Form styling */}
         <input
           type="text"
           name="Employee_ID"
           placeholder="Employee ID"
           value={user.Employee_ID}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100" // Input styling
           required
           disabled
         />
@@ -63,7 +69,7 @@ const EditUserPage = () => {
           placeholder="Name"
           value={user.Name}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -72,7 +78,7 @@ const EditUserPage = () => {
           placeholder="Role"
           value={user.Role}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -81,7 +87,7 @@ const EditUserPage = () => {
           placeholder="Skills (comma separated)"
           value={user.Skills}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -90,7 +96,7 @@ const EditUserPage = () => {
           placeholder="Experience (years)"
           value={user.Experience}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -99,7 +105,7 @@ const EditUserPage = () => {
           placeholder="Availability (hours)"
           value={user.Availability}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -108,7 +114,7 @@ const EditUserPage = () => {
           placeholder="Current Workload (hours)"
           value={user.Current_Workload}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
         <input
@@ -117,10 +123,17 @@ const EditUserPage = () => {
           placeholder="Performance Score"
           value={user.Performance_Score}
           onChange={handleChange}
-          className="users-input"
+          className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" // Input styling
           required
         />
-        <button type="submit" className="users-button">Update User</button>
+        <button
+          type="submit"
+          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full"
+        >
+          {" "}
+          {/* Button styling */}
+          Update User
+        </button>
       </form>
     </div>
   );
