@@ -23,7 +23,8 @@ const TaskAssignment = () => {
   const [feedbackScore, setFeedbackScore] = useState("");
   const [assignedDate, setAssignedDate] = useState("");
   const [isNewTask, setIsNewTask] = useState(false);
-  const [taskHistoryId, setTaskHistoryId] = useState(null); // Add this state
+  const [taskHistoryId, setTaskHistoryId] = useState(null);
+  const [employeeWorkloads, setEmployeeWorkloads] = useState({});
   const navigate = useNavigate();
 
   const calculateCompletionTime = (assignedDate, completedDate) => {
@@ -58,35 +59,37 @@ const TaskAssignment = () => {
     }),
   };
 
-  // Add this function after the customStyles object
   const isTaskAlreadyAssigned = (taskId) => {
     return taskHistory.some((task) => task.Task_ID === taskId);
   };
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/get_task_history")
-      .then((res) => {
-        setTaskHistory(res.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching task history:", error);
-        setLoading(false);
-      });
+  const calculateWorkloadPerWeek = (hours) => {
+    return Math.ceil(hours / 7);
+  };
 
-    axios
-      .get("http://localhost:5000/get_employee")
-      .then((res) => {
-        setEmployees(
-          res.data.map((emp) => ({
-            value: emp.Employee_ID,
-            label: emp.Name,
-          }))
-        );
+  useEffect(() => {
+    Promise.all([
+      axios.get("http://localhost:5000/get_task_history"),
+      axios.get("http://localhost:5000/get_employee")
+    ])
+      .then(([taskRes, empRes]) => {
+        setTaskHistory(taskRes.data);
+        
+        const workloads = {};
+        empRes.data.forEach(emp => {
+          workloads[emp.Employee_ID] = emp.Current_Workload || 0;
+        });
+        setEmployeeWorkloads(workloads);
+        
+        setEmployees(empRes.data.map(emp => ({
+          value: emp.Employee_ID,
+          label: emp.Name
+        })));
+        setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching employees:", error);
+        console.error("Error fetching data:", error);
+        setLoading(false);
       });
   }, []);
 
@@ -100,13 +103,11 @@ const TaskAssignment = () => {
       .get(`http://localhost:5000/recommend_employee/${taskID}`)
       .then((res) => {
         if (res.data.message) {
-          // Handle the case where no recommendation is available
           alert(res.data.message);
           return;
         }
 
         const employeeId = res.data.Best_Employee.Employee_ID;
-        // Find the employee details from the employees list
         const employee = employees.find((emp) => emp.value === employeeId);
 
         if (employee) {
@@ -128,43 +129,82 @@ const TaskAssignment = () => {
       });
   };
 
-  // Modify the handleAssign function
   const handleAssign = () => {
-    if (isTaskAlreadyAssigned(taskID)) {
-      alert("This task has already been assigned!");
+    if (!taskID) {
+      alert("Please enter a Task ID");
       return;
     }
 
-    const data = {
-      Employee_ID: selectedEmployee?.value || recommendedEmployee?.value,
-      Task_ID: taskID,
-      Assigned_Date: new Date().toISOString().split("T")[0],
-    };
+    if (isTaskAlreadyAssigned(taskID)) {
+      alert("This Task ID is already assigned to another employee!");
+      setTaskID("");
+      return;
+    }
 
-    axios
-      .post("http://localhost:5000/add_task_history", data)
-      .then(() => {
-        alert("Task assigned successfully!");
-        setIsNewTask(false);
-        setTaskHistory([...taskHistory, data]);
-        setTaskID("");
-        setSelectedEmployee(null);
-        setRecommendedEmployee(null);
+    const selectedEmployeeId = selectedEmployee?.value || recommendedEmployee?.value;
+    if (!selectedEmployeeId) {
+      alert("Please select an employee");
+      return;
+    }
+
+    axios.get(`http://localhost:5000/get_task/${taskID}`)
+      .then((taskRes) => {
+        if (!taskRes.data) {
+          alert("Task ID does not exist!");
+          return;
+        }
+
+        const taskDetails = taskRes.data;
+        const estimatedHours = taskDetails.Estimated_Time || 0;
+        const workloadIncrease = calculateWorkloadPerWeek(estimatedHours);
+        
+        const taskHistoryData = {
+          Employee_ID: selectedEmployeeId,
+          Task_ID: parseInt(taskID),
+          Assigned_Date: new Date().toISOString().split("T")[0]
+        };
+
+        const workloadData = {
+          Current_Workload: (employeeWorkloads[selectedEmployeeId] || 0) + workloadIncrease
+        };
+
+        Promise.all([
+          axios.post("http://localhost:5000/add_task_history", taskHistoryData),
+          axios.put(`http://localhost:5000/update_employee/${selectedEmployeeId}`, workloadData)
+        ])
+          .then(([taskRes, workloadRes]) => {
+            setTaskHistory(prevHistory => [...prevHistory, taskHistoryData]);
+            setEmployeeWorkloads(prev => ({
+              ...prev,
+              [selectedEmployeeId]: workloadData.Current_Workload
+            }));
+            alert("Task assigned successfully!");
+            setIsNewTask(false);
+            setTaskID("");
+            setSelectedEmployee(null);
+            setRecommendedEmployee(null);
+          })
+          .catch((error) => {
+            console.error("Error updating task and workload:", error);
+            if (error.response && error.response.status === 409) {
+              alert("This Task ID is already assigned!");
+              setTaskID("");
+            } else {
+              alert("Failed to assign task and update workload");
+            }
+          });
       })
       .catch((error) => {
-        console.error("Error assigning task:", error);
-        if (error.response && error.response.status === 409) {
-          alert("This task has already been assigned!");
-        } else {
-          alert("Failed to assign task");
-        }
+        console.error("Error fetching task details:", error);
+        alert("Failed to fetch task details. Please check if the Task ID exists.");
+        setTaskID("");
       });
   };
 
   const handleEdit = (task) => {
     setIsEditing(true);
     setEditTaskID(task.Task_ID);
-    setTaskHistoryId(task.id); // Add this line to store the task history id
+    setTaskHistoryId(task.id);
     setSelectedEmployee(
       employees.find((emp) => emp.value === task.Employee_ID)
     );
@@ -192,13 +232,13 @@ const TaskAssignment = () => {
     };
 
     axios
-      .put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data) // Update the axios call to use the correct endpoint and include the task history id
+      .put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data)
       .then(() => {
         alert("Task updated successfully!");
         setIsEditing(false);
         setEditTaskID(null);
         axios
-          .get("http://localhost:5000/get_task_history") // Refresh the task history after update
+          .get("http://localhost:5000/get_task_history")
           .then((res) => {
             setTaskHistory(res.data);
           })
@@ -226,18 +266,14 @@ const TaskAssignment = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
-      {/* Main container */}
       <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
         Task Assignment
       </h2>
-      {/* Heading */}
       {isEditing ? (
         <div className="bg-white rounded-lg shadow p-6">
-          {/* Edit form card */}
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">
             Edit Assigned Task
           </h3>
-          {/* Edit heading */}
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Select Employee
           </label>
@@ -368,10 +404,35 @@ const TaskAssignment = () => {
             <table className="w-full border border-gray-200 rounded-lg">
               <thead>
                 <tr className="bg-gray-100 text-gray-700">
-                  {/* Add table headers here */}
+                  <th className="px-4 py-2 text-left">Task ID</th>
+                  <th className="px-4 py-2 text-left">Employee ID</th>
+                  <th className="px-4 py-2 text-left">Assigned Date</th>
+                  <th className="px-4 py-2 text-left">Completed Date</th>
+                  <th className="px-4 py-2 text-left">Completion Time</th>
+                  <th className="px-4 py-2 text-left">Feedback Score</th>
+                  <th className="px-4 py-2 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody>{/* Add table rows here */}</tbody>
+              <tbody>
+                {taskHistory.map((task) => (
+                  <tr key={task.id} className="border-t border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-2">{task.Task_ID}</td>
+                    <td className="px-4 py-2">{task.Employee_ID}</td>
+                    <td className="px-4 py-2">{task.Assigned_Date}</td>
+                    <td className="px-4 py-2">{task.Completed_Date || '-'}</td>
+                    <td className="px-4 py-2">{task.Completion_Time || '-'}</td>
+                    <td className="px-4 py-2">{task.Feedback_Score || '-'}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleEdit(task)}
+                        className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded hover:bg-indigo-200 transition-colors"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
           <button

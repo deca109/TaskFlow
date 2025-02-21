@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import NewUserPage from "./NewUserPage"; // Add this import
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[400px]">
@@ -12,18 +13,24 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchUsers = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/get_employee");
+      setUsers(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/get_employee")
-      .then((res) => {
-        setUsers(res.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-        setLoading(false);
-      });
+    fetchUsers();
   }, []);
+
+  const handleUserAdded = async (newUser) => {
+    await fetchUsers(); // Reload the users list after adding a new user
+  };
 
   const handleRemove = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -43,17 +50,22 @@ const UsersPage = () => {
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Users</h2>
-        <Link
-          to="/users/new"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Create New User
-        </Link>
+        {users.length > 0 && (
+          <Link
+            to="/users/new"
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          >
+            Create New User
+          </Link>
+        )}
       </div>
 
       {users.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-          <p className="text-gray-500">No users added yet.</p>
+        <div className="space-y-8">
+          <NewUserPage onUserAdded={handleUserAdded} />
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <p className="text-gray-500">No users added yet.</p>
+          </div>
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -123,7 +135,7 @@ const UsersPage = () => {
                       {user.Availability} hrs
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.Current_Workload} hrs
+                      {user.Current_Workload} %
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {user.Performance_Score}

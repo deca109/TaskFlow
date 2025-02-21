@@ -3,21 +3,32 @@ import React from "react";
 const bannerConfig = {
   logo: "TaskFlow.ai",
   title: "AI-Powered Task Management System",
-  author: "Debopriyo Roy",
+  authors: [
+    {
+      name: "Debopriyo Roy",
+      github: "https://github.com/deca109"
+    },
+    {
+      name: "Shweta Rani Sahoo",
+      github: "https://github.com/Shwetarani45005"
+    },
+    {
+      name: "Aniket Roy",
+      github: "https://github.com/Aniket200000"
+    }
+  ],
   description:
     "An intelligent task management and allocation system that uses AI to recommend the best employee for each task based on skills, performance, and workload.",
-  author_github: "https://github.com/deca109",
   repo_url: "ErikSimson/Taskflow.ai",
   github: "https://github.com/deca109/Taskflow.ai",
   license: "MIT",
 };
 
 const Banner = () => {
-  const { logo, title, author, description, author_github, github, license } =
-    bannerConfig;
+  const { logo, title, authors, description, github, license } = bannerConfig;
 
   return (
-    <div className=" bottom-0 w-full bg-white rounded-lg text-gray-800 p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl border-radius-3xl mt-6">
+    <div className="bottom-0 w-full bg-white rounded-lg text-gray-800 p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl border-radius-3xl mt-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
         {/* Logo and Description Section */}
         <div>
@@ -36,12 +47,22 @@ const Banner = () => {
           <p className="mt-2 font-medium">License: {license}</p>
         </div>
 
-        {/* Author Section */}
+        {/* Authors Section */}
         <div>
-          <h3 className="text-lg font-semibold">Project Author</h3>
-          <a href={author_github} className="text-indigo-600 hover:underline">
-            {author}
-          </a>
+          <h3 className="text-lg font-semibold">Project Authors</h3>
+          <div className="flex flex-col space-y-2 mt-2">
+            {authors.map((author, index) => (
+              <a
+                key={index}
+                href={author.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 hover:underline"
+              >
+                {author.name}
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Links Section */}

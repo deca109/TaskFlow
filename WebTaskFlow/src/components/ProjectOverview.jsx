@@ -48,8 +48,22 @@ export default function ProjectOverview({ projectName }) {
   }, []);
 
   const deleteProject = () => {
-    localStorage.removeItem("projectName");
-    window.location.reload();
+    if (window.confirm("Are you sure you want to delete this project? This will clear all data.")) {
+      // Clear all data from different tables
+      Promise.all([
+        axios.delete("http://localhost:5000/clear_task_history"),
+        axios.delete("http://localhost:5000/clear_tasks"),
+        axios.delete("http://localhost:5000/clear_employees"),
+      ])
+        .then(() => {
+          localStorage.removeItem("projectName");
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Error clearing project data:", error);
+          alert("Failed to clear project data completely");
+        });
+    }
   };
 
   return (
